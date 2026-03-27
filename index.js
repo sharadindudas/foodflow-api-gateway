@@ -10,26 +10,36 @@ app.use(cors());
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
 
 app.use(
-  "/api/proxy/swiggy/mapi",
+  "/api/proxy/swiggy",
   createProxyMiddleware({
     target: "https://www.swiggy.com",
     changeOrigin: true,
     pathRewrite: {
-      "^/api/proxy/swiggy/mapi": "/mapi"
+      "^/api/proxy/swiggy": ""
+    },
+    onProxyReq: (proxyReq) => {
+      proxyReq.setHeader("User-Agent", "Mozilla/5.0");
+      proxyReq.setHeader("Referer", "https://www.swiggy.com/");
+      proxyReq.setHeader("Origin", "https://www.swiggy.com");
+    },
+    onProxyRes: (proxyRes, req, res) => {
+      proxyRes.headers["access-control-allow-origin"] = "*";
+      proxyRes.headers["access-control-allow-headers"] = "Origin, X-Requested-With, Content-Type, Accept, Authorization";
+      proxyRes.headers["access-control-allow-methods"] = "GET, POST, PUT, DELETE, OPTIONS";
     }
   })
 );
 
 app.get("/", (req, res) => {
-  res.send("<h1>Welcome to the Food Delivery App</h1>");
+  res.send("<h1>Swiggy Proxy Server Running 🚀</h1>");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
