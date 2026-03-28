@@ -1,6 +1,6 @@
 {
-  "name": "food-delivery-cors",
-  "description": "A simple Express server to handle CORS for a food delivery application.",
+  "name": "foodflow-api-gateway",
+  "description": "API Gateway / BFF layer for FoodFlow — proxies external food delivery APIs and handles CORS",
   "main": "index.js",
   "type": "module",
   "scripts": {

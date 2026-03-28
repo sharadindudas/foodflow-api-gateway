@@ -1,66 +1,61 @@
-# 🚀 Swiggy Reverse Proxy
+# ⚙️ API Gateway BFF 🚀
 
-> A production-style **Reverse Proxy API Gateway** built with Express.js to securely interact with Swiggy APIs by handling CORS, header transformation, and request forwarding.
+A production-style **Backend-for-Frontend (BFF) API Gateway** built with Express.js to handle request routing, header transformation, and CORS-safe communication with external APIs.
 
 ---
 
-## 🧠 What is this?
+## 🧠 Overview
 
-This project implements a **Backend-for-Frontend (BFF)** layer that acts as a **reverse proxy** between your frontend and Swiggy’s private APIs.
+This project implements a **BFF (Backend-for-Frontend)** layer acting as a **reverse proxy gateway**.
 
-Instead of making direct requests (which are blocked by browsers), your frontend communicates with this proxy server, which:
-
-- Transparently forwards requests to Swiggy
-- Mimics real browser behavior
-- Handles CORS restrictions
-- Returns clean, usable responses
+Instead of calling external APIs directly (blocked by browsers), the frontend communicates with this gateway.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Client (React / Vite)
+Client (React App)
         ↓
-Reverse Proxy (Express.js)
+API Gateway (Express BFF)
         ↓
-Swiggy APIs (External Service)
+External APIs (Swiggy)
 ```
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-- 🔁 **Reverse Proxy Layer** — abstracts Swiggy APIs from frontend
-- 🌐 **CORS Handling** — eliminates browser restrictions
-- 🕵️ **Header Spoofing** — mimics real browser requests
-- 🔀 **Dynamic Path Rewriting** — clean and scalable routing
-- ⚡ **API Gateway Pattern** — centralized request handling
-- 🧩 **Multi-endpoint Support** — works with `/mapi`, `/dapi`, etc.
+- 🔁 Reverse Proxy Gateway
+- 🌐 CORS Handling
+- 🕵️ Header Transformation
+- 🔀 Dynamic Routing (no need to define endpoints manually)
+- ⚡ BFF Pattern
+- 🧩 Multi-Endpoint Support
 
 ---
 
 ## 📦 Tech Stack
 
-- **Node.js**
-- **Express.js**
-- **http-proxy-middleware**
-- **CORS**
+- Node.js
+- Express.js
+- http-proxy-middleware
+- CORS
 
 ---
 
 ## ⚙️ Getting Started
 
-### 1️⃣ Clone the repository
+### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/your-username/swiggy-reverse-proxy.git
-cd swiggy-reverse-proxy
+git clone https://github.com/sharadindudas/api-gateway-bff.git
+cd api-gateway-bff
 ```
 
 ---
 
-### 2️⃣ Install dependencies
+### 2️⃣ Install Dependencies
 
 ```bash
 npm install
@@ -68,13 +63,13 @@ npm install
 
 ---
 
-### 3️⃣ Start the server
+### 3️⃣ Run Server
 
 ```bash
 npm start
 ```
 
-or for development:
+or (for development)
 
 ```bash
 npm run dev
@@ -82,105 +77,169 @@ npm run dev
 
 ---
 
-### 4️⃣ Server will run at
+### 4️⃣ Server URL
 
-```
+```bash
 http://localhost:3001
 ```
 
 ---
 
-## 🔌 API Usage
+## 🔌 API Base Endpoint
 
-### Base Endpoint
-
-```
+```bash
 http://localhost:3001/api/proxy/swiggy
 ```
 
 ---
 
-### 🍽️ Get Restaurant List
+# 📘 Usage Examples
 
-```
-GET /api/proxy/swiggy/dapi/restaurants/list/v5?lat=...&lng=...
+## 📍 1. Fetch Restaurants List
+
+### Frontend Example
+
+```js
+const fetchRestaurants = async () => {
+  const lat = 22.518;
+  const lng = 88.3832;
+
+  const res = await fetch(
+    `http://localhost:3001/api/proxy/swiggy/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`
+  );
+
+  const data = await res.json();
+  console.log(data);
+};
 ```
 
 ---
 
-### 📋 Get Restaurant Menu
+## 🍽️ 2. Fetch Restaurant Menu
 
-```
-GET /api/proxy/swiggy/mapi/menu/pl?restaurantId=...
+```js
+const fetchMenu = async (resId) => {
+  const lat = 22.518;
+  const lng = 88.3832;
+
+  const res = await fetch(
+    `http://localhost:3001/api/proxy/swiggy/mapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${resId}`
+  );
+
+  const data = await res.json();
+  console.log(data);
+};
 ```
 
 ---
 
-## 🔧 How It Works (Behind the Scenes)
+## 🔄 3. Dynamic Routing
 
-1. Frontend sends request to proxy
-2. Express intercepts the request
-3. URL path is rewritten (`/api/proxy/swiggy → ""`)
-4. Headers are modified to mimic a real browser
-5. Request is forwarded to Swiggy
-6. Response headers are rewritten (CORS fix)
-7. Clean response is returned to frontend
+You can call **any Swiggy API endpoint** through this gateway:
 
----
-
-## ⚠️ Why This Exists
-
-Browsers enforce **CORS (Cross-Origin Resource Sharing)**:
-
-> ❌ Direct frontend → Swiggy requests = BLOCKED
-
-This proxy solves it by:
-
-- Acting as a **trusted intermediary**
-- Moving requests to the **server-side**
-- Returning **browser-safe responses**
-
----
-
-## 🧪 Example Flow
-
+```bash
+/api/proxy/swiggy/<ANY_PATH>
 ```
-Frontend Request:
-http://localhost:3001/api/proxy/swiggy/mapi/menu
 
-↓ Proxy transforms ↓
+### Examples:
 
-https://www.swiggy.com/mapi/menu
+```bash
+/api/proxy/swiggy/dapi/restaurants/list/v5
+/api/proxy/swiggy/mapi/menu/pl
+/api/proxy/swiggy/dapi/restaurants/search
+```
+
+---
+
+## 🧪 4. cURL Testing
+
+```bash
+curl "http://localhost:3001/api/proxy/swiggy/dapi/restaurants/list/v5?lat=22.518&lng=88.3832"
+```
+
+---
+
+## ⚙️ Frontend Environment Setup
+
+Create a `.env` file in your frontend project:
+
+```env
+VITE_BASE_URL=http://localhost:3001/
+```
+
+---
+
+## 🛡️ Why Use This BFF?
+
+### ❌ Direct API Call (Fails)
+
+```js
+fetch("https://www.swiggy.com/dapi/restaurants/list/v5");
+// Blocked by CORS
+```
+
+### ✅ Using BFF (Works)
+
+```js
+fetch("http://localhost:3001/api/proxy/swiggy/dapi/restaurants/list/v5");
+// Success
+```
+
+---
+
+## 🔧 How It Works
+
+1. Frontend sends request to BFF
+2. Express intercepts request
+3. Path is rewritten
+4. Headers are modified
+5. Request forwarded to Swiggy
+6. Response returned with CORS headers
+
+---
+
+## 📂 Example Proxy Config
+
+```js
+app.use(
+  "/api/proxy/swiggy",
+  createProxyMiddleware({
+    target: "https://www.swiggy.com",
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api/proxy/swiggy": ""
+    },
+    onProxyReq: (proxyReq) => {
+      proxyReq.setHeader("User-Agent", "Mozilla/5.0");
+      proxyReq.setHeader("Referer", "https://www.swiggy.com/");
+      proxyReq.setHeader("Origin", "https://www.swiggy.com");
+    }
+  })
+);
 ```
 
 ---
 
 ## 💡 Real-World Use Cases
 
-- Building API Gateways
-- Bypassing CORS restrictions
-- Aggregating third-party APIs
-- Backend-for-Frontend (BFF) architecture
-- Secure API abstraction layer
+- API Gateway Architecture
+- Backend-for-Frontend (BFF)
+- Microservices Routing
+- Third-party API Integration
+- CORS-safe communication
 
 ---
 
-## 🚀 Possible Enhancements
+## 🚀 Future Improvements
 
-- ⚡ Response caching (Redis / in-memory)
-- 🚦 Rate limiting
-- 🔁 Retry & fallback logic
-- 📊 Logging & monitoring
-- 🔐 Authentication layer
+- 🔥 Rate Limiting
+- 🔥 Caching (Redis)
+- 🔥 Request Logging (Morgan/Winston)
+- 🔥 Authentication Layer (JWT)
+- 🔥 Multi-API Gateway Support
 
 ---
 
 ## 🧑‍💻 Author
 
 **Sharadindu Das**
-
----
-
-## ⭐ Support
-
-If you found this useful, consider giving it a ⭐ on GitHub!
