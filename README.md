@@ -1,42 +1,42 @@
 # 🚀 Swiggy Reverse Proxy
 
-A lightweight **reverse proxy API gateway** built with **Express.js** to securely fetch data from Swiggy APIs while bypassing CORS restrictions and mimicking real browser requests.
+> A production-style **Reverse Proxy API Gateway** built with Express.js to securely interact with Swiggy APIs by handling CORS, header transformation, and request forwarding.
 
 ---
 
-## 🧠 Overview
+## 🧠 What is this?
 
-This project acts as a **Backend-for-Frontend (BFF)** layer that sits between your frontend application and Swiggy’s APIs.
+This project implements a **Backend-for-Frontend (BFF)** layer that acts as a **reverse proxy** between your frontend and Swiggy’s private APIs.
 
-Instead of calling Swiggy directly (which gets blocked by CORS), the frontend communicates with this proxy server, which:
+Instead of making direct requests (which are blocked by browsers), your frontend communicates with this proxy server, which:
 
-- Forwards requests to Swiggy
-- Modifies headers to mimic real browser traffic
-- Rewrites paths dynamically
-- Fixes CORS issues before sending responses back
+- Transparently forwards requests to Swiggy
+- Mimics real browser behavior
+- Handles CORS restrictions
+- Returns clean, usable responses
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Frontend (React / Vite)
+Client (React / Vite)
         ↓
-Reverse Proxy (Express)
+Reverse Proxy (Express.js)
         ↓
-Swiggy APIs
+Swiggy APIs (External Service)
 ```
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-- 🔁 Reverse Proxy for Swiggy APIs
-- 🌐 CORS Bypass Handling
-- 🕵️ Header Manipulation (User-Agent, Origin, Referer)
-- 🔀 Dynamic Path Rewriting (`/api/proxy/swiggy → /`)
-- ⚡ Centralized API Gateway Layer
-- 🧩 Supports multiple endpoints (`/mapi`, `/dapi`, etc.)
+- 🔁 **Reverse Proxy Layer** — abstracts Swiggy APIs from frontend
+- 🌐 **CORS Handling** — eliminates browser restrictions
+- 🕵️ **Header Spoofing** — mimics real browser requests
+- 🔀 **Dynamic Path Rewriting** — clean and scalable routing
+- ⚡ **API Gateway Pattern** — centralized request handling
+- 🧩 **Multi-endpoint Support** — works with `/mapi`, `/dapi`, etc.
 
 ---
 
@@ -49,9 +49,9 @@ Swiggy APIs
 
 ---
 
-## ⚙️ Setup & Installation
+## ⚙️ Getting Started
 
-### 1. Clone the repository
+### 1️⃣ Clone the repository
 
 ```bash
 git clone https://github.com/your-username/swiggy-reverse-proxy.git
@@ -60,7 +60,7 @@ cd swiggy-reverse-proxy
 
 ---
 
-### 2. Install dependencies
+### 2️⃣ Install dependencies
 
 ```bash
 npm install
@@ -68,13 +68,13 @@ npm install
 
 ---
 
-### 3. Run the server
+### 3️⃣ Start the server
 
 ```bash
 npm start
 ```
 
-or (recommended):
+or for development:
 
 ```bash
 npm run dev
@@ -82,7 +82,7 @@ npm run dev
 
 ---
 
-### 4. Server runs on
+### 4️⃣ Server will run at
 
 ```
 http://localhost:3001
@@ -92,7 +92,7 @@ http://localhost:3001
 
 ## 🔌 API Usage
 
-### Base Proxy URL
+### Base Endpoint
 
 ```
 http://localhost:3001/api/proxy/swiggy
@@ -100,7 +100,7 @@ http://localhost:3001/api/proxy/swiggy
 
 ---
 
-### 🍽️ Fetch Restaurant List
+### 🍽️ Get Restaurant List
 
 ```
 GET /api/proxy/swiggy/dapi/restaurants/list/v5?lat=...&lng=...
@@ -108,7 +108,7 @@ GET /api/proxy/swiggy/dapi/restaurants/list/v5?lat=...&lng=...
 
 ---
 
-### 📋 Fetch Restaurant Menu
+### 📋 Get Restaurant Menu
 
 ```
 GET /api/proxy/swiggy/mapi/menu/pl?restaurantId=...
@@ -116,48 +116,62 @@ GET /api/proxy/swiggy/mapi/menu/pl?restaurantId=...
 
 ---
 
-## 🔧 How It Works
+## 🔧 How It Works (Behind the Scenes)
 
-1. Frontend sends request to proxy server
-2. Proxy intercepts request
-3. Path is rewritten (`/api/proxy/swiggy → ""`)
-4. Headers are modified to mimic browser
+1. Frontend sends request to proxy
+2. Express intercepts the request
+3. URL path is rewritten (`/api/proxy/swiggy → ""`)
+4. Headers are modified to mimic a real browser
 5. Request is forwarded to Swiggy
-6. Response headers are adjusted (CORS fix)
-7. Data is returned to frontend
+6. Response headers are rewritten (CORS fix)
+7. Clean response is returned to frontend
 
 ---
 
-## ⚠️ Why This Is Needed
+## ⚠️ Why This Exists
 
-Browsers enforce **CORS (Cross-Origin Resource Sharing)**, which blocks direct requests to third-party APIs like Swiggy.
+Browsers enforce **CORS (Cross-Origin Resource Sharing)**:
 
-This proxy solves that by:
+> ❌ Direct frontend → Swiggy requests = BLOCKED
 
-- Acting as a trusted intermediary
-- Making requests server-side
-- Returning safe responses to the frontend
+This proxy solves it by:
+
+- Acting as a **trusted intermediary**
+- Moving requests to the **server-side**
+- Returning **browser-safe responses**
 
 ---
 
-## 🧪 Example Request Flow
+## 🧪 Example Flow
 
 ```
-Frontend:
+Frontend Request:
 http://localhost:3001/api/proxy/swiggy/mapi/menu
 
-Proxy transforms →
+↓ Proxy transforms ↓
+
 https://www.swiggy.com/mapi/menu
 ```
 
 ---
 
-## 💡 Use Cases
+## 💡 Real-World Use Cases
 
+- Building API Gateways
 - Bypassing CORS restrictions
-- Building API gateways
 - Aggregating third-party APIs
 - Backend-for-Frontend (BFF) architecture
+- Secure API abstraction layer
+
+---
+
+## 🚀 Possible Enhancements
+
+- ⚡ Response caching (Redis / in-memory)
+- 🚦 Rate limiting
+- 🔁 Retry & fallback logic
+- 📊 Logging & monitoring
+- 🔐 Authentication layer
 
 ---
 
@@ -170,11 +184,3 @@ https://www.swiggy.com/mapi/menu
 ## ⭐ Support
 
 If you found this useful, consider giving it a ⭐ on GitHub!
-
----
-
-## 🧠 Interview Insight
-
-> This project demonstrates practical understanding of reverse proxies, API gateways, CORS handling, and request/response transformation in real-world applications.
-
----
