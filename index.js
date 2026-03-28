@@ -8,8 +8,6 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors());
 
-app.options("/api/proxy/swiggy/*", cors());
-
 app.use(
   "/api/proxy/swiggy",
   createProxyMiddleware({
@@ -20,9 +18,6 @@ app.use(
       proxyReq.setHeader("User-Agent", "Mozilla/5.0");
       proxyReq.setHeader("Referer", "https://www.swiggy.com/");
       proxyReq.setHeader("Origin", "https://www.swiggy.com");
-    },
-    onProxyRes: (proxyRes) => {
-      proxyRes.headers["access-control-allow-origin"] = "*";
     },
     onError: (err, req, res) => {
       console.error("Proxy error:", err.message);
